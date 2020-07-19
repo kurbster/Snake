@@ -199,7 +199,7 @@ def main_loop():
     global click
     while True:
         screen.fill(black)
-        draw_text('main menu', font, white, screen, 20, 20)
+        draw_text('Main Menu', font, white, screen, 20, 20)
         mx, my = pg.mouse.get_pos()
         
         play_button = pg.Rect(50, 100, 200, 50)
@@ -209,7 +209,7 @@ def main_loop():
                 run_game()
         
         pg.draw.rect(screen, green, play_button)
-        draw_text('play game', font, white, screen, 50, 100)
+        draw_text('Play Game', font, white, screen, 50, 100)
         
         click = False
         for event in pg.event.get():
