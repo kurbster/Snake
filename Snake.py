@@ -31,7 +31,7 @@ pg.display.set_icon(icon)
 clock = pg.time.Clock()
 
 # Font objects 
-font = pg.font.SysFont('ariel', 20)
+font = pg.font.SysFont('ariel', 30)
 
 # This is the draw function that will get called every frame of the game
 def draw_grid():
@@ -62,7 +62,7 @@ def draw_food():
     pg.draw.rect(screen, red, (food[0] * box_size, food[1] * box_size, box_size, box_size))
 
 def draw_text(text, font, color, surface, x, y):
-    text_obj = font.render(text, 1, color)
+    text_obj = font.render(text, True, color)
     text_rect = text_obj.get_rect()
     text_rect.topleft = (x, y)
     surface.blit(text_obj, text_rect)
@@ -139,9 +139,7 @@ def run_game():
             # Are then I enter my end_game method which is a game state
             # That allows the user to quit or play again
             if new_head[0] in [-1, columns] or new_head[1] in [-1, rows] or new_head in snake[1:]:
-                pg.quit()
-                sys.exit()
-                # Instead of quitting here I would put my endGame method
+                end_game()
             # If the snake ran into new food then I find a new food
             # And keep the new head in the snake because we grew by one
             snake.insert(0, new_head)
@@ -158,27 +156,60 @@ def run_game():
                 snake.pop()
             
 def end_game():
-    while True:
-        pass
+    global click
+    running = True;
+    while running:
+        screen.fill(black)
+        draw_text('You died!', font, white, screen, 20, 20)
+        mx, my = pg.mouse.get_pos()
+        
+        play_button = pg.Rect(50, 100, 200, 50)
+        quit_button = pg.Rect(50, 200, 200, 50)
+        if play_button.collidepoint((mx, my)):
+            if click:
+                run_game()
+                break
+        if quit_button.collidepoint(mx, my):
+            if click:
+                pg.quit()
+                sys.exit()
+                
+        pg.draw.rect(screen, green, play_button)
+        pg.draw.rect(screen, red, quit_button)
+        draw_text('Play again?', font, white, screen, 50, 100)
+        draw_text('QUIT?', font, white, screen, 50, 200)
+        
+        click = False
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+        
+        pg.display.update()
+        clock.tick(60)
+        
     
 click = False
 # This is my main menu loop where I will add buttons so the
 # User can choose to play the game or have an AI play it(Version 2)
 def main_loop():
-    global click, font
+    global click
     while True:
         screen.fill(black)
         draw_text('main menu', font, white, screen, 20, 20)
         mx, my = pg.mouse.get_pos()
         
-        draw_text('play game', font, white, screen, 50, 100)
         play_button = pg.Rect(50, 100, 200, 50)
-        
         # ai_button = pg.Rect(50, 200, 200, 50)
         if play_button.collidepoint((mx, my)):
             if click:
                 run_game()
-        pg.draw.rect(screen, red, play_button)
+        
+        pg.draw.rect(screen, green, play_button)
+        draw_text('play game', font, white, screen, 50, 100)
         
         click = False
         for event in pg.event.get():
